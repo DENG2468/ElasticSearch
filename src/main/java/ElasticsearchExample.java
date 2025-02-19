@@ -8,6 +8,7 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.client.RestClientBuilder;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -18,8 +19,8 @@ public class ElasticsearchExample {
     private static final int PORT = 9200;
 
     public static void main(String[] args) {
-        RestClient restClient = RestClient.builder(new HttpHost("localhost", 9200, "http")).build();
-        RestHighLevelClient client = new RestHighLevelClient(restClient);
+        RestClientBuilder restClientBuilder = RestClient.builder(new HttpHost("localhost", 9200, "http"));
+        RestHighLevelClient client = new RestHighLevelClient(restClientBuilder);
         try{
             String indexName = "my_index";
             String documentId = "1";

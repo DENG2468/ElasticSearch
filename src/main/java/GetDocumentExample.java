@@ -9,6 +9,7 @@ import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Response;
+import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.common.xcontent.XContentType;
@@ -32,8 +33,8 @@ public class GetDocumentExample {
     private static final int PORT = 9200;
 
     public static void main(String[] args) {
-        RestClient restClient = RestClient.builder(new HttpHost("localhost", 9200, "http")).build();
-        RestHighLevelClient client = new RestHighLevelClient(restClient);
+        RestClientBuilder restClientBuilder = RestClient.builder(new HttpHost("localhost", 9200, "http"));
+        RestHighLevelClient client = new RestHighLevelClient(restClientBuilder);
         try {
             // 创建索引
             CreateIndexRequest createIndexRequest = new CreateIndexRequest("my_index2");
@@ -49,7 +50,7 @@ public class GetDocumentExample {
 
             String jsonString = "{ \"settings\": { \"number_of_shards\": 1, \"number_of_replicas\": 0 }, \"mappings\": { \"_doc\": { \"properties\": { \"field1\": { \"type\": \"text\" }, \"field2\": { \"type\": \"integer\" } } } } }";
             HttpEntity entity = new StringEntity(jsonString, ContentType.APPLICATION_JSON);
-            Response response = restClient.performRequest(
+            Response response = restClientBuilder.build().performRequest(
                     "PUT", "/my_index2", Collections.singletonMap("pretty", "true"),
                     entity);
             Map<String, Object> responseMap = entityAsMap(response);
