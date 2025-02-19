@@ -8,10 +8,7 @@ import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.client.Response;
-import org.elasticsearch.client.RestClientBuilder;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.*;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.apache.http.HttpHost;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -50,9 +47,10 @@ public class GetDocumentExample {
 
             String jsonString = "{ \"settings\": { \"number_of_shards\": 1, \"number_of_replicas\": 0 }, \"mappings\": { \"_doc\": { \"properties\": { \"field1\": { \"type\": \"text\" }, \"field2\": { \"type\": \"integer\" } } } } }";
             HttpEntity entity = new StringEntity(jsonString, ContentType.APPLICATION_JSON);
-            Response response = restClientBuilder.build().performRequest(
-                    "PUT", "/my_index2", Collections.singletonMap("pretty", "true"),
-                    entity);
+            Request createIndexRequest1 = new Request("PUT", "/my_index2");
+            createIndexRequest1.setJsonEntity(jsonString);
+            createIndexRequest1.addParameter("pretty", "true");
+            Response response = restClientBuilder.build().performRequest(createIndexRequest1);
             Map<String, Object> responseMap = entityAsMap(response);
             System.out.println("Index created with status: " + responseMap.get("acknowledged"));
 
@@ -62,12 +60,12 @@ public class GetDocumentExample {
             jsonMap.put("field2", 2);
             IndexRequest indexRequest = new IndexRequest("my_index", "1");
             indexRequest.source(jsonMap);
-            IndexResponse indexResponse = client.index(indexRequest);
+            IndexResponse indexResponse = client.index(indexRequest, RequestOptions.DEFAULT);
             System.out.println("Document indexed with status: " + indexResponse.status());
 
             // 获取文档
             GetRequest getRequest = new GetRequest();
-            GetResponse getResponse = client.get(getRequest);
+            GetResponse getResponse = client.get(getRequest,RequestOptions.DEFAULT);
             System.out.println("Document retrieved: " + getResponse.getSourceAsString());
 
             // 搜索文档
@@ -75,7 +73,7 @@ public class GetDocumentExample {
             SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
             searchSourceBuilder.query(QueryBuilders.matchQuery("field1", "value1"));
             searchRequest.source(searchSourceBuilder);
-            SearchResponse searchResponse = client.search(searchRequest);
+            SearchResponse searchResponse = client.search(searchRequest,RequestOptions.DEFAULT);
             System.out.println("Search response: " + searchResponse.toString());
 
             // 打印搜索结果
